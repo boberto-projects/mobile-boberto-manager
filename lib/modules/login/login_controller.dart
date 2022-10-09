@@ -32,6 +32,11 @@ class LoginController extends GetxController {
       return;
     }
     final apiClient = ApiClient();
-    await apiClient.autenticar(email, senha);
+    try {
+      await apiClient.autenticar(email, senha);
+      Get.toNamed("/otp");
+    } catch (Exceptions) {
+      print("Só pra lembrar: isso aqui não tá adicionando o token no baerer.");
+    }
   }
 }
