@@ -7,7 +7,7 @@ class OtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Otp view"),
+          title: const Text("Otp view"),
         ),
         body: Column(children: [
           const Text("Digite o código recebido por mensagem."),
