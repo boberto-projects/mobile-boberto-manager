@@ -15,4 +15,10 @@ class ApiClient {
         await dio.post('/autenticar', data: {'email': email, 'senha': senha});
     print(response.data.toString());
   }
+
+  Future<void> gerarCodigoOTP() async {
+    Response response;
+    response = await dio.post('/generateotp');
+    print(response.data.toString());
+  }
 }

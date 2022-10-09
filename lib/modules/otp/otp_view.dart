@@ -11,18 +11,40 @@ class OtpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Otp view"),
+      appBar: AppBar(
+        title: const Text("Otp view"),
+      ),
+      body: Column(children: [
+        Obx(
+          () => Visibility(
+              visible: otpController.mostrarErro.value,
+              child: Text(otpController.mensagemErro.value)),
         ),
-        body: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(30),
-            itemCount: otpController.pinCodeList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return PinWidget(
-                pinCodeController: otpController.pinCodeList[index],
-              );
-            }));
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              itemCount: otpController.pinCodeList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return PinWidget(
+                  pinCodeController: otpController.pinCodeList[index],
+                );
+              }),
+        ),
+        ElevatedButton(
+          onPressed: otpController.validarCodigoOTP,
+          child: const Text('Verificar código OTP'),
+        ),
+        ElevatedButton(
+          onPressed: otpController.colarCodigoOTP,
+          child: const Text('Colar código OTP'),
+        ),
+        ElevatedButton(
+          onPressed: otpController.solicitarCodigoOTP,
+          child: const Text('Solicitar código OTP'),
+        )
+      ]),
+    );
   }
 }

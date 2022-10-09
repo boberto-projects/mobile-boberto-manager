@@ -18,12 +18,8 @@ class Home extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Get.toNamed("/otp"),
-            child: const Text('Gerar OTP'),
+            child: const Text('Código OTP'),
           ),
-          ElevatedButton(
-            onPressed: () => Get.toNamed("/otp"),
-            child: const Text('Validar OTP'),
-          )
         ]));
   }
 }

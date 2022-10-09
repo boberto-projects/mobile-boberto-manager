@@ -36,6 +36,7 @@ class LoginController extends GetxController {
       await apiClient.autenticar(email, senha);
       Get.toNamed("/otp");
     } catch (Exceptions) {
+      _mostrarMensagemDeErro("Não foi possível autenticar.");
       print("Só pra lembrar: isso aqui não tá adicionando o token no baerer.");
     }
   }

@@ -1,12 +1,14 @@
 import 'package:auth_otp_test/modules/dio/api_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class OtpController extends GetxController {
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final List<TextEditingController> pinCodeList = [];
-  int otpSize = 2;
+  String secretKeyOtp = "minhachavesecreta2";
+  int otpSize = 6;
 
   OtpController() {
     for (var i = 0; i < otpSize; i++) {
@@ -24,7 +26,35 @@ class OtpController extends GetxController {
     mostrarErro.value = true;
   }
 
+  Future<void> solicitarCodigoOTP() async {
+    final apiClient = ApiClient();
+    try {
+      //a api enviará um SMS para o número do usuário registrado.
+      await apiClient.gerarCodigoOTP();
+    } catch (exception) {
+      _mostrarMensagemDeErro("Código inválido");
+    }
+  }
+
   Future<void> validarCodigoOTP() async {
     _removerMensagemDeErro();
+    String code = pinCodeList.fold(
+        "", (previousValue, element) => previousValue + element.text);
+
+    // var verificaCodigo = totp.verify(otp: code);
+    // if (verificaCodigo == false) {
+    //   _mostrarMensagemDeErro("Código inválido");
+    // }
+  }
+
+  Future<void> colarCodigoOTP() async {
+    Clipboard.getData(Clipboard.kTextPlain).then((value) {
+      String codigoColado = value?.text ?? "";
+      if (codigoColado.isEmpty || codigoColado.length > otpSize) return;
+      var codigoToChars = codigoColado.split("");
+      for (var i = 0; i < codigoToChars.length; i++) {
+        pinCodeList[i].text = codigoToChars[i];
+      }
+    });
   }
 }
