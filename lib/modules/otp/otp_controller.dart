@@ -1,4 +1,5 @@
 import 'package:auth_otp_test/modules/dio/api_client.dart';
+import 'package:dart_dash_otp/dart_dash_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,7 @@ class OtpController extends GetxController {
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final List<TextEditingController> pinCodeList = [];
-  String secretKeyOtp = "minhachavesecreta2";
+  String secretKeyOtp = "J22U6B3WIWRRBTAV";
   int otpSize = 6;
 
   OtpController() {
@@ -41,10 +42,17 @@ class OtpController extends GetxController {
     String code = pinCodeList.fold(
         "", (previousValue, element) => previousValue + element.text);
 
-    // var verificaCodigo = totp.verify(otp: code);
-    // if (verificaCodigo == false) {
-    //   _mostrarMensagemDeErro("Código inválido");
-    // }
+    if (code.isEmpty || code.length > otpSize) {
+      _mostrarMensagemDeErro("É necessário informar um código.");
+      return;
+    }
+
+    TOTP totp = TOTP(secret: secretKeyOtp);
+
+    var verificaCodigo = totp.verify(otp: code);
+    if (verificaCodigo == false) {
+      _mostrarMensagemDeErro("Código inválido");
+    }
   }
 
   Future<void> colarCodigoOTP() async {
