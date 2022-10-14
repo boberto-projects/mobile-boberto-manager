@@ -7,26 +7,32 @@ class SecureStorage {
     storage = const FlutterSecureStorage();
   }
 
-  Future<String?> obterValor(String chave) {
-    return storage.read(key: chave).then((value) => value);
+  String? obterValor(String chave) {
+    storage.read(key: chave).then((value) {
+      return value;
+    });
+    return null;
   }
 
-  Future<bool> chaveExiste(String chave) {
-    return storage.containsKey(key: chave);
+  bool chaveExiste(String chave) {
+    storage.containsKey(key: chave).then((data) {
+      return data;
+    });
+    return false;
   }
 
-  Future<bool> deletarValor(String chave) {
+  bool deletarValor(String chave) {
     storage.delete(key: chave);
-    return Future.value(true);
+    return true;
   }
 
-  Future<bool> deletarTudo(String chave) {
+  bool deletarTudo(String chave) {
     storage.deleteAll();
-    return Future.value(true);
+    return true;
   }
 
-  Future<bool> escreverValor(String chave, String valor) {
+  bool escreverValor(String chave, String valor) {
     storage.write(key: chave, value: valor);
-    return Future.value(true);
+    return true;
   }
 }

@@ -16,18 +16,22 @@ class ApiClient extends GetxService {
   late Dio dio;
   late SecureStorage storage;
   late Options defaultOptions;
-  late Options userLoggedOptions;
 
   ApiClient() {
     dio = Dio();
     storage = SecureStorage();
     dio.options.baseUrl = AppConfig.apiUrl;
-    defaultOptions =
-        Options(headers: {AppConfig.apiKeyHeader: AppConfig.apiKey});
+    bool usuarioLogado = storage.chaveExiste(AppConfig.usuarioTokenJWT);
 
-    if (storage.chaveExiste("usuarioTokenJWT")) {}
-    userLoggedOptions =
-        Options(headers: {"Authorization": storage.obterValor("")});
+    if (usuarioLogado) {
+      defaultOptions = Options(headers: {
+        "Authorization":
+            "Bearer ${storage.obterValor(AppConfig.usuarioTokenJWT)}"
+      });
+    } else {
+      defaultOptions =
+          Options(headers: {AppConfig.apiKeyHeader: AppConfig.apiKey});
+    }
     dio.options.connectTimeout = 5000;
     dio.options.receiveTimeout = 3000;
     dio.options.headers['content-Type'] = 'application/json';
@@ -47,7 +51,9 @@ class ApiClient extends GetxService {
   ///
 
   Future<PerfilResponse> obterPerfil() async {
-    return dio.get('/perfil').then((res) => PerfilResponse.fromMap(res.data));
+    return dio
+        .get('/perfil', options: defaultOptions)
+        .then((res) => PerfilResponse.fromMap(res.data));
   }
 
   ///

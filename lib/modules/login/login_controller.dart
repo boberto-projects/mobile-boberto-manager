@@ -1,4 +1,7 @@
-import 'package:auth_otp_test/modules/dio/api_client.dart';
+import 'package:auth_otp_test/app_config.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/api_client.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/models/autenticar/autenticar_request.dart';
+import 'package:auth_otp_test/modules/providers/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,7 +13,7 @@ class LoginController extends GetxController {
 
   //mock
   LoginController() {
-    emailTextController.text = "email@example.com";
+    emailTextController.text = "robertocpaes@gmail.com";
     senhaTextController.text = "Teste@123";
   }
   void _removerMensagemDeErro() {
@@ -33,7 +36,12 @@ class LoginController extends GetxController {
     }
     final apiClient = ApiClient();
     try {
-      await apiClient.autenticar(email, senha);
+      var storage = SecureStorage();
+      final request = AutenticarRequest(email: email, senha: senha);
+      var response = await apiClient.autenticar(request);
+      storage.escreverValor(
+          AppConfig.usuarioTokenJWT, response.token as String);
+
       Get.toNamed("/otp");
     } catch (Exceptions) {
       _mostrarMensagemDeErro("Não foi possível autenticar.");

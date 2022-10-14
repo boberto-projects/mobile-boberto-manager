@@ -1,4 +1,5 @@
-import 'package:auth_otp_test/modules/dio/api_client.dart';
+import 'package:auth_otp_test/app_config.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/api_client.dart';
 import 'package:dart_dash_otp/dart_dash_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +9,9 @@ class OtpController extends GetxController {
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final List<TextEditingController> pinCodeList = [];
-  String secretKeyOtp = "J22U6B3WIWRRBTAV";
-  int otpSize = 6;
+  String secretKeyOtp = AppConfig.otpKey;
+  int otpSize = AppConfig.size;
+  int intervalo = AppConfig.intervalo;
 
   OtpController() {
     for (var i = 0; i < otpSize; i++) {
@@ -31,7 +33,7 @@ class OtpController extends GetxController {
     final apiClient = ApiClient();
     try {
       //a api enviará um SMS para o número do usuário registrado.
-      await apiClient.gerarCodigoOTP();
+      await apiClient.gerarCodigoOtp();
     } catch (exception) {
       _mostrarMensagemDeErro("Código inválido");
     }
@@ -46,9 +48,7 @@ class OtpController extends GetxController {
       _mostrarMensagemDeErro("É necessário informar um código.");
       return;
     }
-
-    TOTP totp = TOTP(secret: secretKeyOtp);
-
+    TOTP totp = TOTP(secret: secretKeyOtp, interval: intervalo);
     var verificaCodigo = totp.verify(otp: code);
     if (verificaCodigo == false) {
       _mostrarMensagemDeErro("Código inválido");
@@ -58,8 +58,9 @@ class OtpController extends GetxController {
   Future<void> colarCodigoOTP() async {
     Clipboard.getData(Clipboard.kTextPlain).then((value) {
       String codigoColado = value?.text ?? "";
-      if (codigoColado.isEmpty || codigoColado.length > otpSize) return;
-      var codigoToChars = codigoColado.split("");
+      String codigoTratado = codigoColado.replaceAll(RegExp(r'[A-Za-z]'), '');
+      if (codigoTratado.isEmpty || codigoTratado.length > otpSize) return;
+      var codigoToChars = codigoTratado.split("");
       for (var i = 0; i < codigoToChars.length; i++) {
         pinCodeList[i].text = codigoToChars[i];
       }
