@@ -39,7 +39,7 @@ class LoginView extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: loginController.autenticar,
-              child: const Text('Login'),
+              child: const Text('Logar'),
             )
           ]),
         ));

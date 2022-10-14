@@ -55,15 +55,19 @@ class OtpController extends GetxController {
     }
   }
 
+  void preencherCodigoOTP(String codigo) {
+    String codigoTratado = codigo.replaceAll(RegExp(r'[A-Za-z]'), '');
+    if (codigoTratado.isEmpty || codigoTratado.length > otpSize) return;
+    var codigoToChars = codigoTratado.split("");
+    for (var i = 0; i < codigoToChars.length; i++) {
+      pinCodeList[i].text = codigoToChars[i];
+    }
+  }
+
   Future<void> colarCodigoOTP() async {
     Clipboard.getData(Clipboard.kTextPlain).then((value) {
       String codigoColado = value?.text ?? "";
-      String codigoTratado = codigoColado.replaceAll(RegExp(r'[A-Za-z]'), '');
-      if (codigoTratado.isEmpty || codigoTratado.length > otpSize) return;
-      var codigoToChars = codigoTratado.split("");
-      for (var i = 0; i < codigoToChars.length; i++) {
-        pinCodeList[i].text = codigoToChars[i];
-      }
+      preencherCodigoOTP(codigoColado);
     });
   }
 }

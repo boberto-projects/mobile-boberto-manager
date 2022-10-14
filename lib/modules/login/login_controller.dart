@@ -26,6 +26,10 @@ class LoginController extends GetxController {
     mostrarErro.value = true;
   }
 
+  /// TODO: TEMOS QUE FASEAR O LOGIN.
+  /// A autenticação usando OTP é opcional caso o usuário não a ative.
+  /// Entretanto, o login no aplicativo será faseado entre login_view e otp_view
+
   Future<void> autenticar() async {
     _removerMensagemDeErro();
     final email = emailTextController.text;
@@ -39,13 +43,14 @@ class LoginController extends GetxController {
       var storage = SecureStorage();
       final request = AutenticarRequest(email: email, senha: senha);
       var response = await apiClient.autenticar(request);
-      storage.escreverValor(
-          AppConfig.usuarioTokenJWT, response.token as String);
-
-      Get.toNamed("/otp");
+      storage.escreverValor(AppConfig.usuarioTokenJWT, response.token);
+      if (response.duplaAutenticacaoObrigatoria) {
+        Get.toNamed("/otp");
+        return;
+      }
+      Get.toNamed("/perfil");
     } catch (Exceptions) {
       _mostrarMensagemDeErro("Não foi possível autenticar.");
-      print("Só pra lembrar: isso aqui não tá adicionando o token no baerer.");
     }
   }
 }

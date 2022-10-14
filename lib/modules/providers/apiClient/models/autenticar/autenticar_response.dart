@@ -1,39 +1,50 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
 class AutenticarResponse extends Equatable {
-  final String? token;
-  final bool? duplaAutenticacaoObrigatoria;
+  final String token;
+  final bool duplaAutenticacaoObrigatoria;
 
-  const AutenticarResponse({this.token, this.duplaAutenticacaoObrigatoria});
+  const AutenticarResponse({
+    required this.token,
+    required this.duplaAutenticacaoObrigatoria,
+  });
 
-  factory AutenticarResponse.fromMap(Map<String, dynamic> data) {
+  AutenticarResponse copyWith({
+    String? token,
+    bool? duplaAutenticacaoObrigatoria,
+  }) {
     return AutenticarResponse(
-      token: data['token'] as String?,
+      token: token ?? this.token,
       duplaAutenticacaoObrigatoria:
-          data['duplaAutenticacaoObrigatoria'] as bool?,
+          duplaAutenticacaoObrigatoria ?? this.duplaAutenticacaoObrigatoria,
     );
   }
 
-  Map<String, dynamic> toMap() => {
-        'token': token,
-        'duplaAutenticacaoObrigatoria': duplaAutenticacaoObrigatoria,
-      };
-
-  /// `dart:convert`
-  ///
-  /// Parses the string and returns the resulting Json object as [AutenticarResponse].
-  factory AutenticarResponse.fromJson(String data) {
-    return AutenticarResponse.fromMap(
-        json.decode(data) as Map<String, dynamic>);
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'token': token,
+      'duplaAutenticacaoObrigatoria': duplaAutenticacaoObrigatoria,
+    };
   }
 
-  /// `dart:convert`
-  ///
-  /// Converts [AutenticarResponse] to a JSON string.
+  factory AutenticarResponse.fromMap(Map<String, dynamic> map) {
+    return AutenticarResponse(
+      token: map['token'] as String,
+      duplaAutenticacaoObrigatoria: map['duplaAutenticacaoObrigatoria'] as bool,
+    );
+  }
+
   String toJson() => json.encode(toMap());
 
+  factory AutenticarResponse.fromJson(String source) =>
+      AutenticarResponse.fromMap(json.decode(source) as Map<String, dynamic>);
+
   @override
-  List<Object?> get props => [token, duplaAutenticacaoObrigatoria];
+  bool get stringify => true;
+
+  @override
+  List<Object> get props => [token, duplaAutenticacaoObrigatoria];
 }
