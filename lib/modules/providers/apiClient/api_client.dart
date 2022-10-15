@@ -1,5 +1,6 @@
 import 'package:auth_otp_test/app_config.dart';
 import 'package:auth_otp_test/modules/providers/storage/secure_storage.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 
@@ -21,12 +22,12 @@ class ApiClient extends GetxService {
     dio = Dio();
     storage = SecureStorage();
     dio.options.baseUrl = AppConfig.apiUrl;
-    bool usuarioLogado = storage.chaveExiste(AppConfig.usuarioTokenJWT);
+    bool usuarioLogado = storage.chaveExiste(AppConfig.autenticacaoTokenJWT);
 
     if (usuarioLogado) {
       defaultOptions = Options(headers: {
         "Authorization":
-            "Bearer ${storage.obterValor(AppConfig.usuarioTokenJWT)}"
+            "Bearer ${storage.obterValor(AppConfig.autenticacaoTokenJWT)}"
       });
     } else {
       defaultOptions =
@@ -40,49 +41,77 @@ class ApiClient extends GetxService {
   ///
   ///Autenticação
   ///
-  Future<AutenticarResponse> autenticar(AutenticarRequest request) async {
-    return dio
-        .post('/autenticar', data: request.toMap(), options: defaultOptions)
-        .then((res) => AutenticarResponse.fromMap(res.data));
+  Future<Either<Exception, AutenticarResponse>> autenticar(
+      AutenticarRequest request) async {
+    try {
+      return dio
+          .post('/autenticar', data: request.toMap(), options: defaultOptions)
+          .then((res) => right(AutenticarResponse.fromMap(res.data)));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 
   ///
   /// Perfil
   ///
 
-  Future<PerfilResponse> obterPerfil() async {
-    return dio
-        .get('/perfil', options: defaultOptions)
-        .then((res) => PerfilResponse.fromMap(res.data));
+  Future<Either<Exception, PerfilResponse>> obterPerfil() async {
+    try {
+      return dio
+          .get('/perfil', options: defaultOptions)
+          .then((res) => right(PerfilResponse.fromMap(res.data)));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 
   ///
   /// Rotas de OTP
   ///
 
-  Future<ValidarOtpResponse> validarCodigoOtp(ValidarOtpRequest request) async {
-    return dio
-        .post('/validarotp', data: request.toMap(), options: defaultOptions)
-        .then((res) => ValidarOtpResponse.fromMap(res.data));
+  Future<Either<Exception, ValidarOtpResponse>> validarCodigoOtp(
+      ValidarOtpRequest request) async {
+    try {
+      return dio
+          .post('/validarotp', data: request.toMap(), options: defaultOptions)
+          .then((res) => right(ValidarOtpResponse.fromMap(res.data)));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 
-  Future<GerarOtpResponse> gerarCodigoOtp() async {
-    return dio
-        .post('/gerarotp', options: defaultOptions)
-        .then((res) => GerarOtpResponse.fromMap(res.data));
+  Future<Either<Exception, GerarOtpResponse>> gerarCodigoOtp() async {
+    try {
+      return dio
+          .post('/gerarotp', options: defaultOptions)
+          .then((res) => right(GerarOtpResponse.fromMap(res.data)));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 
-  Future<bool> enviarCodigoSMS(EnviarCodigoSmsRequest request) async {
-    return dio
-        .post('/enviarcodigosms',
-            data: request.toMap(), options: defaultOptions)
-        .then((res) => res.statusCode == 200);
+  Future<Either<Exception, bool>> enviarCodigoSMS(
+      EnviarCodigoSmsRequest request) async {
+    try {
+      return dio
+          .post('/enviarcodigosms',
+              data: request.toMap(), options: defaultOptions)
+          .then((res) => right(res.statusCode == 200));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 
-  Future<bool> enviarCodigoEmail(EnviarCodigoEmailRequest request) async {
-    return dio
-        .post('/enviarcodigosms',
-            data: request.toMap(), options: defaultOptions)
-        .then((res) => res.statusCode == 200);
+  Future<Either<Exception, bool>> enviarCodigoEmail(
+      EnviarCodigoEmailRequest request) async {
+    try {
+      return dio
+          .post('/enviarcodigosms',
+              data: request.toMap(), options: defaultOptions)
+          .then((res) => right(res.statusCode == 200));
+    } on DioError catch (exception) {
+      return left(exception);
+    }
   }
 }

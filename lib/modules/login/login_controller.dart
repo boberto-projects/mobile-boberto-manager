@@ -43,7 +43,7 @@ class LoginController extends GetxController {
       var storage = SecureStorage();
       final request = AutenticarRequest(email: email, senha: senha);
       var response = await apiClient.autenticar(request);
-      storage.escreverValor(AppConfig.usuarioTokenJWT, response.token);
+      storage.escreverValor(AppConfig.autenticacaoTokenJWT, response.token);
       if (response.duplaAutenticacaoObrigatoria) {
         Get.toNamed("/otp");
         return;

@@ -8,10 +8,11 @@ import 'package:get/get.dart';
 class OtpController extends GetxController {
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
+  final String titulo = "Fluxo otp";
   final List<TextEditingController> pinCodeList = [];
   String secretKeyOtp = AppConfig.otpKey;
-  int otpSize = AppConfig.size;
-  int intervalo = AppConfig.intervalo;
+  int otpSize = AppConfig.otpTamanho;
+  int intervalo = AppConfig.otpIntervalo;
 
   OtpController() {
     for (var i = 0; i < otpSize; i++) {
