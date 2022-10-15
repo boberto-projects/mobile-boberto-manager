@@ -19,12 +19,12 @@ class PerfilController extends GetxController {
 
   Future<void> obterPerfil() async {
     final apiClient = ApiClient();
-    try {
-      var response = await apiClient.obterPerfil();
-      perfil.value = response;
-      //  Get.toNamed("/otp");
-    } catch (Exceptions) {
+
+    var response = await apiClient.obterPerfil();
+    response.fold((onError) {
       _mostrarMensagemDeErro("Não foi possível autenticar.");
-    }
+    }, (response) {
+      perfil.value = response;
+    });
   }
 }

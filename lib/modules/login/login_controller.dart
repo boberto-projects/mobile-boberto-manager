@@ -39,18 +39,16 @@ class LoginController extends GetxController {
       return;
     }
     final apiClient = ApiClient();
-    try {
-      var storage = SecureStorage();
-      final request = AutenticarRequest(email: email, senha: senha);
-      var response = await apiClient.autenticar(request);
+    var storage = SecureStorage();
+    final request = AutenticarRequest(email: email, senha: senha);
+    var response = await apiClient.autenticar(request);
+    response.fold((onError) => {}, (response) {
       storage.escreverValor(AppConfig.autenticacaoTokenJWT, response.token);
       if (response.duplaAutenticacaoObrigatoria) {
         Get.toNamed("/otp");
-        return;
       }
-      Get.toNamed("/perfil");
-    } catch (Exceptions) {
-      _mostrarMensagemDeErro("Não foi possível autenticar.");
-    }
+    });
+
+    // Get.toNamed("/perfil");
   }
 }
