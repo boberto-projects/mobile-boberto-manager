@@ -16,28 +16,29 @@ import 'models/otp/validar_otp/validar_otp_response..dart';
 import 'models/usuario/perfil_response..dart';
 
 class ApiClient extends GetxService {
-  Future<Dio> _obterApiClient() async {
-    Dio dio = Dio();
-    bool usuarioLogado = false;
-    dio.options.headers.clear();
-    dio.options.receiveDataWhenStatusError = true;
-    dio.options.headers['content-Type'] = 'application/json';
-    dio.options.connectTimeout = 5000;
-    dio.options.receiveTimeout = 3000;
-    dio.options.baseUrl = AppConfig.apiUrl;
-    dio.interceptors.add(LoggingInterceptors());
+  static Dio _dio = Dio();
 
+  Future<Dio> _obterApiClient() async {
+    bool usuarioLogado = false;
     String? chaveJWT =
         await SecureStorage.obterValor(AppConfig.autenticacaoJWTChave);
     usuarioLogado = chaveJWT != null;
+    _dio = Dio();
+    _dio.options.headers.clear();
+    _dio.options.receiveDataWhenStatusError = true;
+    _dio.options.headers['content-Type'] = 'application/json';
+    _dio.options.connectTimeout = 5000;
+    _dio.options.receiveTimeout = 3000;
+    _dio.options.baseUrl = AppConfig.apiUrl;
+    _dio.interceptors.add(LoggingInterceptors());
 
     if (usuarioLogado) {
-      dio.options.headers["Authorization"] = "Bearer $chaveJWT";
+      _dio.options.headers["Authorization"] = "Bearer $chaveJWT";
     } else {
-      dio.options.headers[AppConfig.apiKeyHeader] = AppConfig.apiKey;
+      _dio.options.headers[AppConfig.apiKeyHeader] = AppConfig.apiKey;
     }
 
-    return dio;
+    return _dio;
   }
 
   ///
