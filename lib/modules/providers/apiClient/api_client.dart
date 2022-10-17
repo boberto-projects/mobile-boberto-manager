@@ -1,4 +1,5 @@
 import 'package:auth_otp_test/app_config.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/models/custom_exception/custom_exception_response.dart';
 import 'package:auth_otp_test/modules/providers/storage/secure_storage.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -39,7 +40,7 @@ class ApiClient extends GetxService {
   ///
   ///Autenticação
   ///
-  Future<Either<Exception, AutenticarResponse>> autenticar(
+  Future<Either<CustomExceptionResponse, AutenticarResponse>> autenticar(
       AutenticarRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
@@ -47,7 +48,7 @@ class ApiClient extends GetxService {
           .post('/autenticar', data: request.toMap())
           .then((res) => right(AutenticarResponse.fromMap(res.data)));
     } on DioError catch (exception) {
-      return left(exception);
+      return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
   }
 
@@ -55,14 +56,14 @@ class ApiClient extends GetxService {
   /// Perfil
   ///
 
-  Future<Either<Exception, PerfilResponse>> obterPerfil() async {
+  Future<Either<CustomExceptionResponse, PerfilResponse>> obterPerfil() async {
     try {
       Dio apiClient = await _obterApiClient();
       return apiClient
           .get('/perfil')
           .then((res) => right(PerfilResponse.fromMap(res.data)));
     } on DioError catch (exception) {
-      return left(exception);
+      return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
   }
 
@@ -70,7 +71,7 @@ class ApiClient extends GetxService {
   /// Rotas de OTP
   ///
 
-  Future<Either<Exception, ValidarOtpResponse>> validarCodigoOtp(
+  Future<Either<CustomExceptionResponse, ValidarOtpResponse>> validarCodigoOtp(
       ValidarOtpRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
@@ -79,7 +80,7 @@ class ApiClient extends GetxService {
           .post('/validarotp', data: request.toMap())
           .then((res) => right(ValidarOtpResponse.fromMap(res.data)));
     } on DioError catch (exception) {
-      return left(exception);
+      return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
   }
 
