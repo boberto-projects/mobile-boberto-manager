@@ -26,7 +26,7 @@ class SecureStorage {
     return true;
   }
 
-  bool deletarTudo(String chave) {
+  bool deletarTudo() {
     storage.deleteAll();
     return true;
   }

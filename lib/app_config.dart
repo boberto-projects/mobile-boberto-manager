@@ -1,14 +1,18 @@
 class AppConfig {
   ///Configuração API
-  static String apiKey = "pgH7QzFHJx4w46fI~5Uzi4RvtTwlEXp";
-  static String apiKeyHeader = "ApiKey";
-  static String apiUrl = "http://192.168.0.159:5555";
+  static const String apiKey =
+      String.fromEnvironment('API_KEY', defaultValue: "");
+  static const String apiKeyHeader =
+      String.fromEnvironment("API_HEADER", defaultValue: "");
+  static const String apiUrl =
+      String.fromEnvironment("API_URL", defaultValue: "");
 
   ///Configuração usuário
-  static String autenticacaoTokenJWT = "USER_TOKEN";
+  static String autenticacaoJWTChave = "USER_TOKEN";
 
   ///Codigo OTP
-  static String otpKey = "J22U6B3WIWRRBTAV";
+  static const String otpKey =
+      String.fromEnvironment("OTP_KEY", defaultValue: "");
   static int otpIntervalo = 60;
   static int otpTamanho = 6;
 }

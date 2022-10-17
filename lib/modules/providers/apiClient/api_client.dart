@@ -22,12 +22,12 @@ class ApiClient extends GetxService {
     dio = Dio();
     storage = SecureStorage();
     dio.options.baseUrl = AppConfig.apiUrl;
-    bool usuarioLogado = storage.chaveExiste(AppConfig.autenticacaoTokenJWT);
+    bool usuarioLogado = storage.chaveExiste(AppConfig.autenticacaoJWTChave);
 
     if (usuarioLogado) {
       defaultOptions = Options(headers: {
         "Authorization":
-            "Bearer ${storage.obterValor(AppConfig.autenticacaoTokenJWT)}"
+            "Bearer ${storage.obterValor(AppConfig.autenticacaoJWTChave)}"
       });
     } else {
       defaultOptions =

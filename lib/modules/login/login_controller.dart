@@ -13,7 +13,7 @@ class LoginController extends GetxController {
 
   //mock
   LoginController() {
-    emailTextController.text = "robertocpaes@gmail.com";
+    emailTextController.text = "email@example.com";
     senhaTextController.text = "Teste@123";
   }
   void _removerMensagemDeErro() {
@@ -43,7 +43,7 @@ class LoginController extends GetxController {
     final request = AutenticarRequest(email: email, senha: senha);
     var response = await apiClient.autenticar(request);
     response.fold((onError) => {}, (response) {
-      storage.escreverValor(AppConfig.autenticacaoTokenJWT, response.token);
+      storage.escreverValor(AppConfig.autenticacaoJWTChave, response.token);
       if (response.duplaAutenticacaoObrigatoria) {
         Get.toNamed("/otp");
       }
