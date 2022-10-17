@@ -6,6 +6,13 @@ class PerfilController extends GetxController {
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final Rx<PerfilResponse?> perfil = Rx<PerfilResponse?>(null);
+  final apiClient = Get.find<ApiClient>();
+
+  @override
+  onInit() async {
+    super.onInit();
+    await obterPerfil();
+  }
 
   void _removerMensagemDeErro() {
     mostrarErro.value = false;
@@ -18,8 +25,7 @@ class PerfilController extends GetxController {
   }
 
   Future<void> obterPerfil() async {
-    final apiClient = ApiClient();
-
+    _removerMensagemDeErro();
     var response = await apiClient.obterPerfil();
     response.fold((onError) {
       _mostrarMensagemDeErro("Não foi possível autenticar.");

@@ -10,6 +10,7 @@ class LoginController extends GetxController {
   final TextEditingController senhaTextController = TextEditingController();
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
+  final apiClient = Get.find<ApiClient>();
 
   //mock
   LoginController() {
@@ -22,8 +23,8 @@ class LoginController extends GetxController {
   }
 
   void _mostrarMensagemDeErro(String mensagem) {
-    mensagemErro.value = mensagem;
     mostrarErro.value = true;
+    mensagemErro.value = mensagem;
   }
 
   /// TODO: TEMOS QUE FASEAR O LOGIN.
@@ -38,17 +39,20 @@ class LoginController extends GetxController {
       _mostrarMensagemDeErro("Preencha todos os dados.");
       return;
     }
-    final apiClient = ApiClient();
-    var storage = SecureStorage();
     final request = AutenticarRequest(email: email, senha: senha);
+    await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
     var response = await apiClient.autenticar(request);
-    response.fold((onError) => {}, (response) {
-      storage.escreverValor(AppConfig.autenticacaoJWTChave, response.token);
+    response.fold((onError) async {
+      _mostrarMensagemDeErro("Dados inválidos.");
+    }, (response) async {
+      await SecureStorage.escreverValor(
+          AppConfig.autenticacaoJWTChave, response.token);
+
       if (response.duplaAutenticacaoObrigatoria) {
         Get.toNamed("/otp");
       }
-    });
 
-    // Get.toNamed("/perfil");
+      Get.toNamed("/perfil");
+    });
   }
 }

@@ -1,38 +1,28 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {
-  late FlutterSecureStorage storage;
+  static const _storage = FlutterSecureStorage();
 
-  SecureStorage() {
-    storage = const FlutterSecureStorage();
+  static Future<String?> obterValor(String chave) async {
+    return await _storage.read(key: chave);
   }
 
-  String? obterValor(String chave) {
-    storage.read(key: chave).then((value) {
-      return value;
-    });
-    return null;
+  static Future<bool> chaveExiste(String chave) async {
+    return await _storage.containsKey(key: chave);
   }
 
-  bool chaveExiste(String chave) {
-    storage.containsKey(key: chave).then((data) {
-      return data;
-    });
-    return false;
-  }
-
-  bool deletarValor(String chave) {
-    storage.delete(key: chave);
+  static Future<bool> deletarValor(String chave) async {
+    await _storage.delete(key: chave);
     return true;
   }
 
-  bool deletarTudo() {
-    storage.deleteAll();
+  static Future<bool> deletarTudo() async {
+    await _storage.deleteAll();
     return true;
   }
 
-  bool escreverValor(String chave, String valor) {
-    storage.write(key: chave, value: valor);
+  static Future<bool> escreverValor(String chave, String valor) async {
+    await _storage.write(key: chave, value: valor);
     return true;
   }
 }

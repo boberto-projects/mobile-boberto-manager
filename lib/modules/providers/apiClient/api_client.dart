@@ -14,28 +14,26 @@ import 'models/otp/validar_otp/validar_otp_response..dart';
 import 'models/usuario/perfil_response..dart';
 
 class ApiClient extends GetxService {
-  late Dio dio;
-  late SecureStorage storage;
-  late Options defaultOptions;
-
-  ApiClient() {
-    dio = Dio();
-    storage = SecureStorage();
-    dio.options.baseUrl = AppConfig.apiUrl;
-    bool usuarioLogado = storage.chaveExiste(AppConfig.autenticacaoJWTChave);
-
-    if (usuarioLogado) {
-      defaultOptions = Options(headers: {
-        "Authorization":
-            "Bearer ${storage.obterValor(AppConfig.autenticacaoJWTChave)}"
-      });
-    } else {
-      defaultOptions =
-          Options(headers: {AppConfig.apiKeyHeader: AppConfig.apiKey});
-    }
+  Future<Dio> _obterApiClient() async {
+    Dio dio = Dio();
+    bool usuarioLogado = false;
+    dio.options.headers.clear();
+    dio.options.receiveDataWhenStatusError = true;
+    dio.options.headers['content-Type'] = 'application/json';
     dio.options.connectTimeout = 5000;
     dio.options.receiveTimeout = 3000;
-    dio.options.headers['content-Type'] = 'application/json';
+    dio.options.baseUrl = AppConfig.apiUrl;
+    String? chaveJWT =
+        await SecureStorage.obterValor(AppConfig.autenticacaoJWTChave);
+    usuarioLogado = chaveJWT != null;
+
+    if (usuarioLogado) {
+      dio.options.headers["Authorization"] = "Bearer $chaveJWT";
+    } else {
+      dio.options.headers[AppConfig.apiKeyHeader] = AppConfig.apiKey;
+    }
+
+    return dio;
   }
 
   ///
@@ -44,8 +42,9 @@ class ApiClient extends GetxService {
   Future<Either<Exception, AutenticarResponse>> autenticar(
       AutenticarRequest request) async {
     try {
-      return dio
-          .post('/autenticar', data: request.toMap(), options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+      return apiClient
+          .post('/autenticar', data: request.toMap())
           .then((res) => right(AutenticarResponse.fromMap(res.data)));
     } on DioError catch (exception) {
       return left(exception);
@@ -58,8 +57,9 @@ class ApiClient extends GetxService {
 
   Future<Either<Exception, PerfilResponse>> obterPerfil() async {
     try {
-      return dio
-          .get('/perfil', options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+      return apiClient
+          .get('/perfil')
           .then((res) => right(PerfilResponse.fromMap(res.data)));
     } on DioError catch (exception) {
       return left(exception);
@@ -73,8 +73,10 @@ class ApiClient extends GetxService {
   Future<Either<Exception, ValidarOtpResponse>> validarCodigoOtp(
       ValidarOtpRequest request) async {
     try {
-      return dio
-          .post('/validarotp', data: request.toMap(), options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+
+      return apiClient
+          .post('/validarotp', data: request.toMap())
           .then((res) => right(ValidarOtpResponse.fromMap(res.data)));
     } on DioError catch (exception) {
       return left(exception);
@@ -83,8 +85,9 @@ class ApiClient extends GetxService {
 
   Future<Either<Exception, GerarOtpResponse>> gerarCodigoOtp() async {
     try {
-      return dio
-          .post('/gerarotp', options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+      return apiClient
+          .post('/gerarotp')
           .then((res) => right(GerarOtpResponse.fromMap(res.data)));
     } on DioError catch (exception) {
       return left(exception);
@@ -94,9 +97,9 @@ class ApiClient extends GetxService {
   Future<Either<Exception, bool>> enviarCodigoSMS(
       EnviarCodigoSmsRequest request) async {
     try {
-      return dio
-          .post('/enviarcodigosms',
-              data: request.toMap(), options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+      return apiClient
+          .post('/enviarcodigosms', data: request.toMap())
           .then((res) => right(res.statusCode == 200));
     } on DioError catch (exception) {
       return left(exception);
@@ -106,9 +109,9 @@ class ApiClient extends GetxService {
   Future<Either<Exception, bool>> enviarCodigoEmail(
       EnviarCodigoEmailRequest request) async {
     try {
-      return dio
-          .post('/enviarcodigosms',
-              data: request.toMap(), options: defaultOptions)
+      Dio apiClient = await _obterApiClient();
+      return apiClient
+          .post('/enviarcodigosms', data: request.toMap())
           .then((res) => right(res.statusCode == 200));
     } on DioError catch (exception) {
       return left(exception);
