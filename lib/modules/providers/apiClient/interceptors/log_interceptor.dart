@@ -1,12 +1,17 @@
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class LoggingInterceptors extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    print("onRequest");
+    var apiUrl = options.baseUrl + options.path;
+    print(apiUrl);
+    print(options.method);
+    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+    String prettyprint = encoder.convert(options.data);
+    print(prettyprint);
     return super.onRequest(options, handler);
   }
 

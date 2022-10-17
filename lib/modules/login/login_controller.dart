@@ -42,17 +42,16 @@ class LoginController extends GetxController {
     final request = AutenticarRequest(email: email, senha: senha);
     await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
     var response = await apiClient.autenticar(request);
-    response.fold((onError) async {
+    response.fold((onError) {
+      print(onError.mensagem);
       _mostrarMensagemDeErro(onError.mensagem);
     }, (response) async {
       await SecureStorage.escreverValor(
           AppConfig.autenticacaoJWTChave, response.token);
-
       if (response.duplaAutenticacaoObrigatoria) {
         Get.toNamed("/otp");
       }
-
-      Get.toNamed("/perfil");
+      //  Get.toNamed("/perfil");
     });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:auth_otp_test/app_config.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/interceptors/log_interceptor.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/models/custom_exception/custom_exception_response.dart';
 import 'package:auth_otp_test/modules/providers/storage/secure_storage.dart';
 import 'package:dartz/dartz.dart';
@@ -24,6 +25,8 @@ class ApiClient extends GetxService {
     dio.options.connectTimeout = 5000;
     dio.options.receiveTimeout = 3000;
     dio.options.baseUrl = AppConfig.apiUrl;
+    dio.interceptors.add(LoggingInterceptors());
+
     String? chaveJWT =
         await SecureStorage.obterValor(AppConfig.autenticacaoJWTChave);
     usuarioLogado = chaveJWT != null;
@@ -44,9 +47,8 @@ class ApiClient extends GetxService {
       AutenticarRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
-      return apiClient
-          .post('/autenticar', data: request.toMap())
-          .then((res) => right(AutenticarResponse.fromMap(res.data)));
+      var response = await apiClient.post('/autenticar', data: request.toMap());
+      return right(AutenticarResponse.fromMap(response.data));
     } on DioError catch (exception) {
       return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
@@ -59,37 +61,36 @@ class ApiClient extends GetxService {
   Future<Either<CustomExceptionResponse, PerfilResponse>> obterPerfil() async {
     try {
       Dio apiClient = await _obterApiClient();
-      return apiClient
-          .get('/perfil')
-          .then((res) => right(PerfilResponse.fromMap(res.data)));
+      var response = await apiClient.get('/perfil');
+      return right(PerfilResponse.fromMap(response.data));
     } on DioError catch (exception) {
       return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
   }
 
   ///
-  /// Rotas de OTP
+  /// NÃO SERA USADA DEPRECATED
   ///
 
   Future<Either<CustomExceptionResponse, ValidarOtpResponse>> validarCodigoOtp(
       ValidarOtpRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
-
-      return apiClient
-          .post('/validarotp', data: request.toMap())
-          .then((res) => right(ValidarOtpResponse.fromMap(res.data)));
+      var response = await apiClient.post('/validarotp', data: request.toMap());
+      return right(ValidarOtpResponse.fromMap(response.data));
     } on DioError catch (exception) {
       return left(CustomExceptionResponse.fromMap(exception.response?.data));
     }
   }
 
+  ///
+  /// NÃO SERA USADA DEPRECATED
+  ///
   Future<Either<Exception, GerarOtpResponse>> gerarCodigoOtp() async {
     try {
       Dio apiClient = await _obterApiClient();
-      return apiClient
-          .post('/gerarotp')
-          .then((res) => right(GerarOtpResponse.fromMap(res.data)));
+      var response = await apiClient.post('/gerarotp');
+      return right(GerarOtpResponse.fromMap(response.data));
     } on DioError catch (exception) {
       return left(exception);
     }
@@ -99,9 +100,9 @@ class ApiClient extends GetxService {
       EnviarCodigoSmsRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
-      return apiClient
-          .post('/enviarcodigosms', data: request.toMap())
-          .then((res) => right(res.statusCode == 200));
+      var response =
+          await apiClient.post('/enviarcodigosms', data: request.toMap());
+      return right(response.statusCode == 200);
     } on DioError catch (exception) {
       return left(exception);
     }
@@ -111,9 +112,9 @@ class ApiClient extends GetxService {
       EnviarCodigoEmailRequest request) async {
     try {
       Dio apiClient = await _obterApiClient();
-      return apiClient
-          .post('/enviarcodigosms', data: request.toMap())
-          .then((res) => right(res.statusCode == 200));
+      var response =
+          await apiClient.post('/enviarcodigoemail', data: request.toMap());
+      return right(response.statusCode == 200);
     } on DioError catch (exception) {
       return left(exception);
     }
