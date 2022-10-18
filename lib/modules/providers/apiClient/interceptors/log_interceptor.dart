@@ -1,36 +1,46 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:convert';
+import 'package:auth_otp_test/modules/providers/apiClient/interceptors/inteceptor_model.dart';
 import 'package:dio/dio.dart';
 
 class LoggingInterceptors extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    var titulo = '${options.baseUrl}${options.path} [${options.method}]';
-    print(titulo);
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    String prettyprint = encoder.convert(options.data);
-    print(prettyprint);
+    var model = InterceptorModel(
+        url: '${options.baseUrl}${options.path}',
+        method: options.method,
+        request: options.data,
+        headers: options.headers,
+        queryParams: options.queryParameters);
+    model.toConsoleLog(titulo: "Request");
     return super.onRequest(options, handler);
   }
 
   @override
   Future onResponse(
       Response response, ResponseInterceptorHandler handler) async {
-    print("RESPOSTA");
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    String prettyprint = encoder.convert(response.data);
-    print(prettyprint);
+    var model = InterceptorModel(
+        method: response.requestOptions.method,
+        response: response.data,
+        headers: response.headers.map,
+        statusCode: response.statusCode,
+        queryParams: response.requestOptions.queryParameters);
+    model.toConsoleLog(titulo: "Response");
     return super.onResponse(response, handler);
   }
 
   @override
   Future onError(DioError err, ErrorInterceptorHandler handler) async {
-    var titulo = 'OCORREU UM ERRO [${err.response?.statusCode}]';
-    print(titulo);
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    String prettyprint = encoder.convert(err.response?.data);
-    print(prettyprint);
+    var model = InterceptorModel(
+        method: err.requestOptions.method,
+        statusCode: err.response?.statusCode,
+        response: err.response?.data,
+        headers: err.response?.headers.map,
+        queryParams: err.requestOptions.queryParameters);
+    model.toConsoleLog(titulo: "OCORREU UM ERRO");
     return handler.next(err); // <--- THE TIP IS HERE
   }
 }
