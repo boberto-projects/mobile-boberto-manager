@@ -43,7 +43,6 @@ class LoginController extends GetxController {
     await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
     var response = await apiClient.autenticar(request);
     response.fold((onError) {
-      print(onError.mensagem);
       _mostrarMensagemDeErro(onError.mensagem);
     }, (response) async {
       await SecureStorage.escreverValor(

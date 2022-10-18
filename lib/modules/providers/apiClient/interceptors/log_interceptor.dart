@@ -1,8 +1,5 @@
-// ignore_for_file: avoid_print
-
 import 'dart:async';
-import 'dart:convert';
-import 'package:auth_otp_test/modules/providers/apiClient/interceptors/inteceptor_model.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/interceptors/models/inteceptor_model.dart';
 import 'package:dio/dio.dart';
 
 class LoggingInterceptors extends Interceptor {
