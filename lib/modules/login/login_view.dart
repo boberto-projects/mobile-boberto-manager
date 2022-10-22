@@ -1,11 +1,9 @@
 import 'package:auth_otp_test/modules/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controller/otp_controller.dart';
 
 class LoginView extends StatelessWidget {
   final loginController = Get.find<LoginController>();
-  final otpController = Get.find<OtpController>();
 
   LoginView({super.key});
 

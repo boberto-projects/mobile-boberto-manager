@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 
 class PinBoxSection extends StatelessWidget {
   final TextEditingController pinCodeController;
-  final Function notificarMudanca;
+  final void Function() notificarMudanca;
+
   const PinBoxSection(
       {super.key,
       required this.pinCodeController,

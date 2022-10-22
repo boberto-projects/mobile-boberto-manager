@@ -21,7 +21,7 @@ class OtpWidget extends StatelessWidget {
         itemCount: controller.pinCodeList.length,
         itemBuilder: (BuildContext context, int index) {
           return PinBoxSection(
-              notificarMudanca: (value) {
+              notificarMudanca: () {
                 codigoDigitado(controller.obterCodigoOTP);
               },
               pinCodeController: controller.pinCodeList[index]);

@@ -8,6 +8,5 @@ class LoginBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => LoginController(OtpController()));
     Get.lazyPut(() => ApiClient());
-
   }
 }

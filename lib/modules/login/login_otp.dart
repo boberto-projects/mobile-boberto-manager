@@ -6,7 +6,6 @@ import 'controller/otp_controller.dart';
 
 class LoginOtpView extends StatelessWidget {
   final loginController = Get.find<LoginController>();
-  final otpController = Get.find<OtpController>();
 
   LoginOtpView({super.key});
 
@@ -14,27 +13,39 @@ class LoginOtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Login view"),
+          title: const Text("Otp view"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(mainAxisSize: MainAxisSize.max, children: [
             Obx(
               () => Visibility(
-                  visible: otpController.mostrarErro.value,
-                  child: Text(otpController.mensagemErro.value)),
+                  visible: loginController.mostrarErro.value,
+                  child: Text(loginController.mensagemErro.value)),
             ),
+            const Text(
+                "Código OTP enviado para o número de celular cadastrado."),
             Expanded(
                 child: Center(
                     child: OtpWidget(
                         codigoDigitado: (codigo) {
-                          print(codigo);
+                          loginController.validarCodigoOTP();
                         },
-                        controller: otpController))),
+                        controller: loginController.otpController))),
+            Obx(() => Text("Expira em ${loginController.tempoExpiracao}")),
             ElevatedButton(
-              onPressed: loginController.autenticar,
-              child: const Text('Logar'),
-            )
+              onPressed: loginController.aguardarSMS,
+              child: const Text('Aguardar SMS'),
+            ),
+            ElevatedButton(
+              onPressed: loginController.colarCodigoOTP,
+              child: const Text('Colar código OTP'),
+            ),
+
+            // ElevatedButton(
+            //   onPressed: loginController.autenticar,
+            //   child: const Text('Logar'),
+            // )
           ]),
         ));
   }
