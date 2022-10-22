@@ -44,7 +44,10 @@ class LoginController extends GetxController {
     await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
     var response = await apiClient.autenticar(request);
     response.fold((onError) {
-      _mostrarMensagemDeErro(onError.mensagem);
+      if (onError.tipo == "codigo_otp_nao_informado") {
+        Get.toNamed('/loginotp');
+      }
+      //_mostrarMensagemDeErro(onError.mensagem);
     }, (response) async {
       SecureStorage.escreverValor(
           AppConfig.autenticacaoJWTChave, response.token);
