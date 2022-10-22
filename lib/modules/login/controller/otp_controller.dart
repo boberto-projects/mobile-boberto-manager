@@ -46,6 +46,7 @@ class OtpController extends GetxController {
   Future<void> validarCodigoOTP() async {
     _removerMensagemDeErro();
     String code = obterCodigoOTP;
+
     if (code.isEmpty || code.length < otpSize) {
       _mostrarMensagemDeErro("É necessário informar um código.");
       return;

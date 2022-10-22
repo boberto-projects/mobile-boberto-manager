@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 
 class PinBoxSection extends StatelessWidget {
   final TextEditingController pinCodeController;
-  final dynamic codigoDigitado;
+  final Function notificarMudanca;
   const PinBoxSection(
       {super.key,
       required this.pinCodeController,
-      required this.codigoDigitado});
+      required this.notificarMudanca});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PinBoxSection extends StatelessWidget {
           textAlign: TextAlign.center,
           controller: pinCodeController,
           onChanged: (value) {
-            codigoDigitado(value);
+            notificarMudanca();
           },
           textInputAction: TextInputAction.next,
           inputFormatters: [LengthLimitingTextInputFormatter(1)],

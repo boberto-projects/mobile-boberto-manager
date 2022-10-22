@@ -25,7 +25,12 @@ class LoginOtpView extends StatelessWidget {
                   child: Text(otpController.mensagemErro.value)),
             ),
             Expanded(
-                child: Center(child: OtpWidget(controller: otpController))),
+                child: Center(
+                    child: OtpWidget(
+                        codigoDigitado: (codigo) {
+                          print(codigo);
+                        },
+                        controller: otpController))),
             ElevatedButton(
               onPressed: loginController.autenticar,
               child: const Text('Logar'),
