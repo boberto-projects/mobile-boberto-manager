@@ -6,35 +6,44 @@ import 'package:equatable/equatable.dart';
 class AutenticarResponse extends Equatable {
   final String token;
   final bool duplaAutenticacaoObrigatoria;
+  final String tipo;
+  final DateTime expiraEm;
 
-  const AutenticarResponse({
-    required this.token,
-    required this.duplaAutenticacaoObrigatoria,
-  });
+  const AutenticarResponse(
+      {required this.token,
+      required this.duplaAutenticacaoObrigatoria,
+      required this.tipo,
+      required this.expiraEm});
 
-  AutenticarResponse copyWith({
-    String? token,
-    bool? duplaAutenticacaoObrigatoria,
-  }) {
+  AutenticarResponse copyWith(
+      {String? token,
+      bool? duplaAutenticacaoObrigatoria,
+      String? tipo,
+      DateTime? expiraEm}) {
     return AutenticarResponse(
-      token: token ?? this.token,
-      duplaAutenticacaoObrigatoria:
-          duplaAutenticacaoObrigatoria ?? this.duplaAutenticacaoObrigatoria,
-    );
+        token: token ?? this.token,
+        duplaAutenticacaoObrigatoria:
+            duplaAutenticacaoObrigatoria ?? this.duplaAutenticacaoObrigatoria,
+        tipo: tipo ?? this.tipo,
+        expiraEm: expiraEm ?? DateTime.now());
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'token': token,
       'duplaAutenticacaoObrigatoria': duplaAutenticacaoObrigatoria,
+      'tipo': tipo,
+      'expiraEm': expiraEm,
     };
   }
 
   factory AutenticarResponse.fromMap(Map<String, dynamic> map) {
     return AutenticarResponse(
-      token: map['token'] as String,
-      duplaAutenticacaoObrigatoria: map['duplaAutenticacaoObrigatoria'] as bool,
-    );
+        token: map['token'] as String,
+        duplaAutenticacaoObrigatoria:
+            map['duplaAutenticacaoObrigatoria'] as bool,
+        expiraEm: map['expiraEm'] as DateTime,
+        tipo: map['tipo'] as String);
   }
 
   String toJson() => json.encode(toMap());

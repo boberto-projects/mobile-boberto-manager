@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:alt_sms_autofill/alt_sms_autofill.dart';
 import 'package:auth_otp_test/app_config.dart';
 import 'package:auth_otp_test/modules/login/controller/otp_controller.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/api_client.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/models/autenticar/autenticar_request.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/models/otp/enviar_otp/enviar_codigo_sms_request.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/models/usuario/perfil_response..dart';
 import 'package:auth_otp_test/modules/providers/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +16,7 @@ class LoginController extends GetxController {
   final TextEditingController emailTextController = TextEditingController();
   final TextEditingController senhaTextController = TextEditingController();
   final Rx<int> tempoExpiracao = Rx<int>(AppConfig.otpIntervalo);
-
+  final Rx<PerfilResponse?> perfil = Rx<PerfilResponse?>(null);
   final Rx<bool> duplaAutenticacaoObrigatoria = Rx<bool>(false);
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
@@ -23,9 +26,10 @@ class LoginController extends GetxController {
 
   //mock
   LoginController(OtpController? otpController) {
-    emailTextController.text = "teste@robertinho.net";
+    emailTextController.text = "robertocpaes@gmail.com";
     senhaTextController.text = "Teste@123";
     this.otpController = otpController ?? OtpController();
+    smsAutofill = AltSmsAutofill();
   }
   void _removerMensagemDeErro() {
     mostrarErro.value = false;
@@ -53,19 +57,28 @@ class LoginController extends GetxController {
         email: email, senha: senha, codigo: otpController.obterCodigoOTP);
     await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
     var response = await apiClient.autenticar(request);
-    response.fold((onError) {
+    response.fold((onError) async {
       _mostrarMensagemDeErro(onError.mensagem);
+      //aguardarSMS();
+      otpController.limparCodigoOTP();
 
       if (onError.tipo == "codigo_otp_nao_informado") {
-        Get.toNamed('/loginotp');
-      }
-      if (onError.tipo == "codigo_otp_invalido") {
-        otpController.limparCodigoOTP();
         Get.toNamed('/loginotp');
       }
     }, (response) async {
       SecureStorage.escreverValor(
           AppConfig.autenticacaoJWTChave, response.token);
+
+      if (response.tipo == "token_temporario") {
+        var response = await apiClient.obterPerfil();
+        response.fold((onError) {
+          _mostrarMensagemDeErro("Não foi possível autenticar.");
+        }, (response) {
+          perfil.value = response;
+          Get.toNamed('/loginotp');
+        });
+      }
+
       if (response.duplaAutenticacaoObrigatoria) {
         duplaAutenticacaoObrigatoria.value =
             response.duplaAutenticacaoObrigatoria;
@@ -95,16 +108,26 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> aguardarSMS() async {
-    final smsAutofill = AltSmsAutofill();
-    String codigo = "";
-    try {
-      codigo = await smsAutofill.listenForSms ?? "";
-    } on PlatformException {
-      codigo = 'Failed to get Sms.';
-    }
+  void aguardarSMS() {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      String codigo = "";
+      try {
+        smsAutofill?.listenForSms.then((value) {
+          codigo = value ?? "";
+        });
+        print("codigo_sms" + codigo);
+      } on Exception {
+        codigo = 'Failed to get Sms.';
+      }
+      otpController.preencherCodigoOTP(codigo);
 
-    otpController.preencherCodigoOTP(codigo);
+      print(timer.tick);
+      tempoExpiracao.value--;
+      if (tempoExpiracao.value == 0) {
+        print('Cancel timer');
+        timer.cancel();
+      }
+    });
   }
 
   @override

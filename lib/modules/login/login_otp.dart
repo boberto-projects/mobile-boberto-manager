@@ -33,13 +33,14 @@ class LoginOtpView extends StatelessWidget {
                         },
                         controller: loginController.otpController))),
             Obx(() => Text("Expira em ${loginController.tempoExpiracao}")),
-            ElevatedButton(
-              onPressed: loginController.aguardarSMS,
-              child: const Text('Aguardar SMS'),
+            const ElevatedButton(
+              onPressed: null,
+              child: Text('Reenviar'),
             ),
+
             ElevatedButton(
               onPressed: loginController.colarCodigoOTP,
-              child: const Text('Colar código OTP'),
+              child: const Text('Colar código'),
             ),
 
             // ElevatedButton(
