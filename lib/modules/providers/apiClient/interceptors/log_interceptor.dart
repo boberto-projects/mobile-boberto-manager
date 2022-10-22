@@ -7,7 +7,7 @@ class LoggingInterceptors extends Interceptor {
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     var model = InterceptorModel(
-        url: '${options.baseUrl}${options.path}',
+        url: '${options.uri}',
         method: options.method,
         request: options.data,
         headers: options.headers,
@@ -20,6 +20,7 @@ class LoggingInterceptors extends Interceptor {
   Future onResponse(
       Response response, ResponseInterceptorHandler handler) async {
     var model = InterceptorModel(
+        url: '${response.requestOptions.uri}',
         method: response.requestOptions.method,
         response: response.data,
         headers: response.headers.map,
@@ -32,6 +33,7 @@ class LoggingInterceptors extends Interceptor {
   @override
   Future onError(DioError err, ErrorInterceptorHandler handler) async {
     var model = InterceptorModel(
+        url: '${err.requestOptions.uri}',
         method: err.requestOptions.method,
         statusCode: err.response?.statusCode,
         response: err.response?.data,

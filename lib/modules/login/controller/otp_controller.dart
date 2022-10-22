@@ -40,15 +40,18 @@ class OtpController extends GetxController {
     }
   }
 
+  String get obterCodigoOTP => pinCodeList.fold(
+      "", (previousValue, element) => previousValue + element.text);
+
   Future<void> validarCodigoOTP() async {
     _removerMensagemDeErro();
-    String code = pinCodeList.fold(
-        "", (previousValue, element) => previousValue + element.text);
-
-    if (code.isEmpty || code.length > otpSize) {
+    String code = obterCodigoOTP;
+    if (code.isEmpty || code.length < otpSize) {
       _mostrarMensagemDeErro("É necessário informar um código.");
       return;
     }
+    print("codigo otp alterado");
+
     TOTP totp = TOTP(secret: secretKeyOtp, interval: intervalo);
     var verificaCodigo = totp.verify(otp: code);
     if (verificaCodigo == false) {

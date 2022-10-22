@@ -1,7 +1,6 @@
 import 'package:auth_otp_test/modules/home/home.dart';
 import 'package:auth_otp_test/modules/login/bindings/login_binding.dart';
-import 'package:auth_otp_test/modules/otp/bindings/otp_binding.dart';
-import 'package:auth_otp_test/modules/otp/otp_view.dart';
+import 'package:auth_otp_test/modules/login/login_otp.dart';
 import 'package:auth_otp_test/modules/perfil/bindings/perfil_binding.dart';
 import 'package:auth_otp_test/modules/perfil/perfil_view.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,10 @@ void main() {
           name: '/autenticar',
           page: () => LoginView(),
           bindings: [LoginBinding()]),
-      GetPage(name: '/otp', page: () => OtpView(), bindings: [OtpBinding()]),
+      GetPage(
+          name: '/loginotp',
+          page: () => LoginOtpView(),
+          bindings: [LoginBinding()]),
       GetPage(
           name: '/perfil',
           page: () => PerfilView(),

@@ -8,13 +8,14 @@ import 'package:get/get.dart';
 class LoginController extends GetxController {
   final TextEditingController emailTextController = TextEditingController();
   final TextEditingController senhaTextController = TextEditingController();
+  final Rx<bool> duplaAutenticacaoObrigatoria = Rx<bool>(false);
   final Rx<bool> mostrarErro = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final apiClient = Get.find<ApiClient>();
 
   //mock
   LoginController() {
-    emailTextController.text = "email@example.com";
+    emailTextController.text = "robertocpaes@gmail.com";
     senhaTextController.text = "Teste@123";
   }
   void _removerMensagemDeErro() {
@@ -45,12 +46,18 @@ class LoginController extends GetxController {
     response.fold((onError) {
       _mostrarMensagemDeErro(onError.mensagem);
     }, (response) async {
-      await SecureStorage.escreverValor(
+      SecureStorage.escreverValor(
           AppConfig.autenticacaoJWTChave, response.token);
       if (response.duplaAutenticacaoObrigatoria) {
-        Get.toNamed("/otp");
+        duplaAutenticacaoObrigatoria.value =
+            response.duplaAutenticacaoObrigatoria;
+        Get.toNamed('/loginotp');
       }
-      //  Get.toNamed("/perfil");
+      Get.toNamed("/perfil");
     });
+  }
+
+  Future<void> autenticarComOTP() async {
+    Get.toNamed('/loginotp');
   }
 }

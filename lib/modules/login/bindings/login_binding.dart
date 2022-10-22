@@ -1,4 +1,5 @@
-import 'package:auth_otp_test/modules/login/login_controller.dart';
+import 'package:auth_otp_test/modules/login/controller/login_controller.dart';
+import 'package:auth_otp_test/modules/login/controller/otp_controller.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/api_client.dart';
 import 'package:get/get.dart';
 
@@ -7,5 +8,6 @@ class LoginBinding extends Bindings {
   void dependencies() {
     Get.lazyPut(() => LoginController());
     Get.lazyPut(() => ApiClient());
+    Get.lazyPut(() => OtpController());
   }
 }
