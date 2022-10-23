@@ -102,7 +102,7 @@ class ApiClient extends GetxService {
     try {
       Dio apiClient = await _obterApiClient();
       var response =
-          await apiClient.post('/enviarcodigosms', data: request.toMap());
+          await apiClient.post('/otp/enviarcodigosms', data: request.toMap());
       return right(response.statusCode == 200);
     } on DioError catch (exception) {
       return left(exception);
@@ -114,7 +114,7 @@ class ApiClient extends GetxService {
     try {
       Dio apiClient = await _obterApiClient();
       var response =
-          await apiClient.post('/enviarcodigoemail', data: request.toMap());
+          await apiClient.post('/otp/enviarcodigoemail', data: request.toMap());
       return right(response.statusCode == 200);
     } on DioError catch (exception) {
       return left(exception);

@@ -13,6 +13,6 @@ class AppConfig {
   ///Codigo OTP
   static const String otpKey =
       String.fromEnvironment("OTP_KEY", defaultValue: "");
-  static int otpIntervalo = 120;
+  static int otpIntervalo = 60;
   static int otpTamanho = 6;
 }

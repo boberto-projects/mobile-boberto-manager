@@ -7,7 +7,7 @@ class AutenticarResponse extends Equatable {
   final String token;
   final bool duplaAutenticacaoObrigatoria;
   final String tipo;
-  final DateTime expiraEm;
+  final String expiraEm;
 
   const AutenticarResponse(
       {required this.token,
@@ -19,13 +19,13 @@ class AutenticarResponse extends Equatable {
       {String? token,
       bool? duplaAutenticacaoObrigatoria,
       String? tipo,
-      DateTime? expiraEm}) {
+      String? expiraEm}) {
     return AutenticarResponse(
         token: token ?? this.token,
         duplaAutenticacaoObrigatoria:
             duplaAutenticacaoObrigatoria ?? this.duplaAutenticacaoObrigatoria,
         tipo: tipo ?? this.tipo,
-        expiraEm: expiraEm ?? DateTime.now());
+        expiraEm: expiraEm ?? this.expiraEm);
   }
 
   Map<String, dynamic> toMap() {
@@ -42,7 +42,7 @@ class AutenticarResponse extends Equatable {
         token: map['token'] as String,
         duplaAutenticacaoObrigatoria:
             map['duplaAutenticacaoObrigatoria'] as bool,
-        expiraEm: map['expiraEm'] as DateTime,
+        expiraEm: map['expiraEm'] as String,
         tipo: map['tipo'] as String);
   }
 
@@ -50,6 +50,12 @@ class AutenticarResponse extends Equatable {
 
   factory AutenticarResponse.fromJson(String source) =>
       AutenticarResponse.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  static DateTime parseDatetimeFromUtc(String isoFormattedString) {
+    isoFormattedString = isoFormattedString.replaceAll('Z', '');
+    var dateTime = DateTime.parse('$isoFormattedString+00:00');
+    return dateTime.toLocal();
+  }
 
   @override
   bool get stringify => true;

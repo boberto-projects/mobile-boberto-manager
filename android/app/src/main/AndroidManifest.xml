@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.auth_otp_test">
+    <uses-permission android:name="android.permission.READ_SMS" />
+
    <application
         android:label="auth_otp_test"
         android:name="${applicationName}"

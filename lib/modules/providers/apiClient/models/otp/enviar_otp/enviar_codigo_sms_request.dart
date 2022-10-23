@@ -1,21 +1,21 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
 class EnviarCodigoSmsRequest extends Equatable {
-  final String? numeroCelular;
+  final String numeroCelular;
+  const EnviarCodigoSmsRequest({
+    required this.numeroCelular,
+  });
 
-  const EnviarCodigoSmsRequest({this.numeroCelular});
 
-  factory EnviarCodigoSmsRequest.fromMap(Map<String, dynamic> data) {
-    return EnviarCodigoSmsRequest(
-      numeroCelular: data['numeroCelular'] as String?,
-    );
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'numeroCelular': numeroCelular,
+    };
   }
-
-  Map<String, dynamic> toMap() => {
-        'numeroCelular': numeroCelular,
-      };
 
   /// `dart:convert`
   ///
@@ -31,5 +31,23 @@ class EnviarCodigoSmsRequest extends Equatable {
   String toJson() => json.encode(toMap());
 
   @override
-  List<Object?> get props => [numeroCelular];
+  List<Object> get props => [numeroCelular];
+
+  EnviarCodigoSmsRequest copyWith({
+    String? numeroCelular,
+  }) {
+    return EnviarCodigoSmsRequest(
+      numeroCelular: numeroCelular ?? this.numeroCelular,
+    );
+  }
+
+  factory EnviarCodigoSmsRequest.fromMap(Map<String, dynamic> map) {
+    return EnviarCodigoSmsRequest(
+      numeroCelular: map['numeroCelular'] as String,
+    );
+  }
+
+
+  @override
+  bool get stringify => true;
 }

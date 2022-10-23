@@ -1,8 +1,8 @@
+import 'package:auth_otp_test/app_config.dart';
 import 'package:auth_otp_test/modules/login/controller/login_controller.dart';
 import 'package:auth_otp_test/modules/login/widgets/otp_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'controller/otp_controller.dart';
 
 class LoginOtpView extends StatelessWidget {
   final loginController = Get.find<LoginController>();
@@ -29,14 +29,20 @@ class LoginOtpView extends StatelessWidget {
                 child: Center(
                     child: OtpWidget(
                         codigoDigitado: (codigo) {
-                          loginController.validarCodigoOTP();
+                          // loginController.validarCodigoOTP();
                         },
                         controller: loginController.otpController))),
             Obx(() => Text("Expira em ${loginController.tempoExpiracao}")),
-            const ElevatedButton(
-              onPressed: null,
-              child: Text('Reenviar'),
-            ),
+            // Obx(() => ElevatedButton(
+            //       onPressed: loginController.tempoExpiracao.value ==
+            //               AppConfig.otpIntervalo
+            //           ? loginController.enviarCodigoSMS
+            //           : null,
+            //       child: const Text('Reenviar'),
+            //     )),
+            ElevatedButton(
+                onPressed: loginController.enviarCodigoSMS,
+                child: const Text('Reenviar')),
 
             ElevatedButton(
               onPressed: loginController.colarCodigoOTP,
