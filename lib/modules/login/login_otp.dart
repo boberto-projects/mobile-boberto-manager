@@ -31,23 +31,25 @@ class LoginOtpView extends StatelessWidget {
                         codigoDigitado: (codigo) {
                           // loginController.validarCodigoOTP();
                         },
-                        controller: loginController.otpController))),
-            Obx(() => Text("Expira em ${loginController.tempoExpiracao}")),
-            // Obx(() => ElevatedButton(
-            //       onPressed: loginController.tempoExpiracao.value ==
-            //               AppConfig.otpIntervalo
-            //           ? loginController.enviarCodigoSMS
-            //           : null,
-            //       child: const Text('Reenviar'),
-            //     )),
+                        listaCodigoOTP:
+                            loginController.otpService.pinCodeList))),
+            Obx(() => Text(
+                "Expira em ${loginController.tempoIntervaloReenviar.value}")),
+            Obx(() => ElevatedButton(
+                  onPressed: loginController.tempoIntervaloReenviar.value ==
+                          AppConfig.otpIntervalo
+                      ? loginController.enviarEAguardarSMS
+                      : null,
+                  child: const Text('Reenviar'),
+                )),
             ElevatedButton(
                 onPressed: loginController.enviarCodigoSMS,
                 child: const Text('Reenviar')),
 
-            ElevatedButton(
-              onPressed: loginController.colarCodigoOTP,
-              child: const Text('Colar código'),
-            ),
+            // ElevatedButton(
+            //   onPressed: loginController.colarCodigoOTP,
+            //   child: const Text('Colar código'),
+            // ),
 
             // ElevatedButton(
             //   onPressed: loginController.autenticar,
