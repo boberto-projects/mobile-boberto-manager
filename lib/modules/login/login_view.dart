@@ -18,8 +18,8 @@ class LoginView extends StatelessWidget {
           child: Column(children: [
             Obx(
               () => Visibility(
-                  visible: loginController.mostrarErro.value,
-                  child: Text(loginController.mensagemErro.value)),
+                  visible: loginController.showError.value,
+                  child: Text(loginController.messageError.value)),
             ),
             TextField(
               controller: loginController.emailTextController,
@@ -30,15 +30,15 @@ class LoginView extends StatelessWidget {
             ),
             const SizedBox(height: 5.0),
             TextField(
-              controller: loginController.senhaTextController,
+              controller: loginController.passwordTextController,
               obscureText: true,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Senha',
+                labelText: 'Password',
               ),
             ),
             ElevatedButton(
-              onPressed: loginController.autenticar,
+              onPressed: loginController.authenticator,
               child: const Text('Logar'),
             )
           ]),

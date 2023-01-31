@@ -3,7 +3,7 @@ import 'package:auth_otp_test/modules/providers/apiClient/models/usuario/perfil_
 import 'package:get/get.dart';
 
 class PerfilController extends GetxController {
-  final Rx<bool> mostrarErro = Rx<bool>(false);
+  final Rx<bool> showError = Rx<bool>(false);
   final Rx<String> mensagemErro = Rx<String>("");
   final Rx<PerfilResponse?> perfil = Rx<PerfilResponse?>(null);
   final apiClient = Get.find<ApiClient>();
@@ -11,24 +11,24 @@ class PerfilController extends GetxController {
   @override
   onInit() async {
     super.onInit();
-    await obterPerfil();
+    await getProfile();
   }
 
   void _removerMensagemDeErro() {
-    mostrarErro.value = false;
+    showError.value = false;
     mensagemErro.value = "";
   }
 
   void _mostrarMensagemDeErro(String mensagem) {
     mensagemErro.value = mensagem;
-    mostrarErro.value = true;
+    showError.value = true;
   }
 
-  Future<void> obterPerfil() async {
+  Future<void> getProfile() async {
     _removerMensagemDeErro();
-    var response = await apiClient.obterPerfil();
+    var response = await apiClient.getProfile();
     response.fold((onError) {
-      _mostrarMensagemDeErro("Não foi possível autenticar.");
+      _mostrarMensagemDeErro("Não foi possível authenticator.");
     }, (response) {
       perfil.value = response;
     });

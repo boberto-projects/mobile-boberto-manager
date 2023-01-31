@@ -2,39 +2,40 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class AutenticarRequest extends Equatable {
+class authenticatorRequest extends Equatable {
   final String? email;
-  final String? senha;
-  final String? codigo;
+  final String? password;
+  final String? code;
 
-  const AutenticarRequest({this.email, this.senha, this.codigo});
+  const authenticatorRequest({this.email, this.password, this.code});
 
-  factory AutenticarRequest.fromMap(Map<String, dynamic> data) {
-    return AutenticarRequest(
+  factory authenticatorRequest.fromMap(Map<String, dynamic> data) {
+    return authenticatorRequest(
       email: data['email'] as String?,
-      senha: data['senha'] as String?,
-      codigo: data['codigo'] as String?,
+      password: data['password'] as String?,
+      code: data['code'] as String?,
     );
   }
 
   Map<String, dynamic> toMap() => {
         'email': email,
-        'senha': senha,
-        'codigo': codigo,
+        'password': password,
+        'code': code,
       };
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [AutenticarRequest].
-  factory AutenticarRequest.fromJson(String data) {
-    return AutenticarRequest.fromMap(json.decode(data) as Map<String, dynamic>);
+  /// Parses the string and returns the resulting Json object as [authenticatorRequest].
+  factory authenticatorRequest.fromJson(String data) {
+    return authenticatorRequest
+        .fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [AutenticarRequest] to a JSON string.
+  /// Converts [authenticatorRequest] to a JSON string.
   String toJson() => json.encode(toMap());
 
   @override
-  List<Object?> get props => [email, senha, codigo];
+  List<Object?> get props => [email, password, code];
 }

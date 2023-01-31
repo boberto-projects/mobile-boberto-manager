@@ -13,7 +13,7 @@ class Home extends StatelessWidget {
         body: Column(children: [
           const Text("Teste de autenticação OTP"),
           ElevatedButton(
-            onPressed: () => Get.toNamed("/autenticar"),
+            onPressed: () => Get.toNamed("/authenticator"),
             child: const Text('Autenticação'),
           ),
           ElevatedButton(

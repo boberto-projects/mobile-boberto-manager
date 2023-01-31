@@ -4,7 +4,8 @@ import 'dart:async';
 import 'package:auth_otp_test/app_config.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/api_client.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/models/autenticar/autenticar_request.dart';
-import 'package:auth_otp_test/modules/providers/apiClient/models/otp/enviar_otp/enviar_codigo_sms_request.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/models/otp/send_otp/send_email_code_request.dart';
+import 'package:auth_otp_test/modules/providers/apiClient/models/otp/send_otp/send_sms_code_request.dart';
 import 'package:auth_otp_test/modules/providers/apiClient/models/usuario/perfil_response..dart';
 import 'package:auth_otp_test/modules/providers/services/otp_service.dart';
 import 'package:auth_otp_test/modules/providers/services/sms_service.dart';
@@ -14,68 +15,62 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailTextController = TextEditingController();
-  final TextEditingController senhaTextController = TextEditingController();
+  final TextEditingController passwordTextController = TextEditingController();
   final Rx<PerfilResponse?> perfil = Rx<PerfilResponse?>(null);
-  final Rx<bool> duplaAutenticacaoObrigatoria = Rx<bool>(false);
-  final Rx<bool> mostrarErro = Rx<bool>(false);
-  final Rx<String> mensagemErro = Rx<String>("");
-  final Rx<int> tempoIntervaloReenviar = Rx<int>(AppConfig.otpIntervalo);
+  final Rx<bool> pairAuthenticationEnabled = Rx<bool>(false);
+  final Rx<bool> showError = Rx<bool>(false);
+  final Rx<String> messageError = Rx<String>("");
+  final Rx<int> intervalTimeResend = Rx<int>(AppConfig.otpInterval);
   final apiClient = Get.find<ApiClient>();
   final smsService = Get.find<SMSService>();
   final otpService = Get.find<OtpService>();
 
-  Timer? intervaloReenviar;
+  Timer? intervalResend;
 
   //mock
   LoginController() {
     emailTextController.text = "robertocpaes@gmail.com";
-    senhaTextController.text = "Teste@123";
+    passwordTextController.text = "Teste@123";
   }
-  void _removerMensagemDeErro() {
-    mostrarErro.value = false;
-    mensagemErro.value = "";
-  }
-
-  void _mostrarMensagemDeErro(String mensagem) {
-    mostrarErro.value = true;
-    mensagemErro.value = mensagem;
+  void _removeMessageError() {
+    showError.value = false;
+    messageError.value = "";
   }
 
-  /// TODO: TEMOS QUE FASEAR O LOGIN.
-  /// A autenticação usando OTP é opcional caso o usuário não a ative.
-  /// Entretanto, o login no aplicativo será faseado entre login_view e otp_view
+  void _showErrorMessage(String message) {
+    showError.value = true;
+    messageError.value = message;
+  }
 
-  Future<void> autenticar() async {
-    _removerMensagemDeErro();
+  Future<void> authenticator() async {
+    _removeMessageError();
     final email = emailTextController.text;
-    final senha = senhaTextController.text;
-    if (email.isEmpty || senha.isEmpty) {
-      _mostrarMensagemDeErro("Preencha todos os dados.");
+    final password = passwordTextController.text;
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorMessage("Preencha todos os dados.");
       return;
     }
-    final request = AutenticarRequest(
-        email: email, senha: senha, codigo: otpService.obterCodigoOTP);
-    await SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
-    var response = await apiClient.autenticar(request);
+    final request = authenticatorRequest(
+        email: email, password: password, code: otpService.getCode);
+    await SecureStorage.delete(AppConfig.authenticationJWTBaerer);
+    var response = await apiClient.authenticator(request);
     response.fold((onError) async {
-      _mostrarMensagemDeErro(onError.mensagem);
-      otpService.limparCodigoOTP();
-      if (onError.tipo == "codigo_otp_nao_informado") {
+      _showErrorMessage(onError.message);
+      otpService.clear();
+      if (onError.type == "code_otp_nao_informado") {
         Get.toNamed('/loginotp');
       }
     }, (response) async {
-      SecureStorage.escreverValor(
-          AppConfig.autenticacaoJWTChave, response.token);
+      SecureStorage.write(AppConfig.authenticationJWTBaerer, response.token);
 
-      if (response.duplaAutenticacaoObrigatoria) {
-        duplaAutenticacaoObrigatoria.value =
-            response.duplaAutenticacaoObrigatoria;
-        var perfilRequest = await apiClient.obterPerfil();
+      if (response.pairAuthenticationEnabled) {
+        pairAuthenticationEnabled.value = response.pairAuthenticationEnabled;
+        var perfilRequest = await apiClient.getProfile();
         perfilRequest.fold((onError) {
-          _mostrarMensagemDeErro("Dados inválidos.");
-        }, (obterPerfilResponse) {
-          perfil.value = obterPerfilResponse;
-          SecureStorage.deletarValor(AppConfig.autenticacaoJWTChave);
+          _showErrorMessage("Dados inválidos.");
+        }, (getProfileResponse) {
+          perfil.value = getProfileResponse;
+          SecureStorage.delete(AppConfig.authenticationJWTBaerer);
           Get.toNamed('/loginotp');
         });
         return;
@@ -84,45 +79,43 @@ class LoginController extends GetxController {
     });
   }
 
-  void iniciarIntervalo() {
-    if (intervaloReenviar != null) {
+  void startInterval() {
+    if (intervalResend != null) {
       return;
     }
-    intervaloReenviar =
-        Timer.periodic(const Duration(seconds: 1), (timer) async {
-      tempoIntervaloReenviar.value--;
-      if (tempoIntervaloReenviar.value == 0) {
-        tempoIntervaloReenviar.value = AppConfig.otpIntervalo;
+    intervalResend = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      intervalTimeResend.value--;
+      if (intervalTimeResend.value == 0) {
+        intervalTimeResend.value = AppConfig.otpInterval;
         timer.cancel();
       }
     });
   }
 
-  void enviarEAguardarSMS() async {
-    iniciarIntervalo();
-    await enviarCodigoSMS();
-    await smsService.aguardarSMS((smsRecebido) {
-      bool codigoValido = otpService.validarCodigoOTP(smsRecebido);
-      if (codigoValido) {
-        autenticar();
+  void sendAndWaitSMS() async {
+    startInterval();
+    await sendSMSCode();
+    await smsService.waitSMS((smsRecebido) {
+      bool codeValido = otpService.validate(smsRecebido);
+      if (codeValido) {
+        authenticator();
       }
     });
   }
 
-  Future enviarCodigoSMS() async {
-    var enviarCodigoSMSRequest = await apiClient.enviarCodigoSMS(
-        EnviarCodigoSmsRequest(
-            numeroCelular: perfil.value?.numeroCelular ?? ""));
-    enviarCodigoSMSRequest.fold((onError) {
-      _mostrarMensagemDeErro("Ocorreu um erro ao enviar SMS.");
-    }, (enviarCodigoSMSResponse) {
-      iniciarIntervalo();
+  Future sendSMSCode() async {
+    var sendSMSCodeRequest = await apiClient.sendSMSCode(
+        SendSmsCodeRequest(phoneNumber: perfil.value?.numeroCelular ?? ""));
+    sendSMSCodeRequest.fold((onError) {
+      _showErrorMessage("Ocorreu um erro ao enviar SMS.");
+    }, (sendSMSCodeResponse) {
+      startInterval();
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-    intervaloReenviar?.cancel();
+    intervalResend?.cancel();
   }
 }

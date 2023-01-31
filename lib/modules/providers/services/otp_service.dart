@@ -2,62 +2,61 @@ import 'package:dart_dash_otp/dart_dash_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../../../app_config.dart';
 
 class OtpService extends GetxService {
   final List<TextEditingController> pinCodeList = [];
   String otpChaveSecreta = AppConfig.otpKey;
-  int otpTamanho = AppConfig.otpTamanho;
-  int intervalo = AppConfig.otpIntervalo;
+  int otpLength = AppConfig.otpLength;
+  int interval = AppConfig.otpInterval;
 
   OtpService() {
-    _gerarListaPinCode();
+    _generateFields();
   }
 
-  void _gerarListaPinCode() {
-    for (var i = 0; i < otpTamanho; i++) {
+  void _generateFields() {
+    for (var i = 0; i < otpLength; i++) {
       pinCodeList.add(TextEditingController());
     }
   }
 
-  void limparCodigoOTP() {
+  void clear() {
     pinCodeList.clear();
-    _gerarListaPinCode();
+    _generateFields();
   }
 
-  String get obterCodigoOTP => pinCodeList.fold(
+  String get getCode => pinCodeList.fold(
       "", (previousValue, element) => previousValue + element.text);
 
-  bool validarCodigoOTP(String codigo) {
-    codigo = tratarCodigoOTP(codigo);
-    if (codigo.isEmpty || codigo.length < otpTamanho) {
+  bool validate(String codigo) {
+    codigo = _clearInvalidChars(codigo);
+    if (codigo.isEmpty || codigo.length < otpLength) {
       return false;
     }
     TOTP totp =
-        TOTP(secret: otpChaveSecreta, interval: intervalo, digits: otpTamanho);
+        TOTP(secret: otpChaveSecreta, interval: interval, digits: otpLength);
 
-    bool verificaCodigo = totp.verify(otp: codigo);
-    return verificaCodigo;
+    bool validCode = totp.verify(otp: codigo);
+    return validCode;
   }
 
-  String tratarCodigoOTP(String codigo) {
+  String _clearInvalidChars(String codigo) {
     codigo = codigo.replaceAll(RegExp(r'[^0-9]'), '');
-    if (codigo.isEmpty || codigo.length > otpTamanho) return "";
+    if (codigo.isEmpty || codigo.length > otpLength) return "";
     return codigo;
   }
 
-  void preencherCodigoOTP(String codigo) {
-    String codigoTratado = tratarCodigoOTP(codigo);
-    var codigoToChars = codigoTratado.split("");
-    for (var i = 0; i < codigoToChars.length; i++) {
-      pinCodeList[i].text = codigoToChars[i];
+  void fill(String codigo) {
+    String codigoTratado = _clearInvalidChars(codigo);
+    var codeToChars = codigoTratado.split("");
+    for (var i = 0; i < codeToChars.length; i++) {
+      pinCodeList[i].text = codeToChars[i];
     }
   }
 
-  Future<String> colarCodigoOTP() async {
+  Future<String> paste() async {
     ClipboardData? clipBoard = await Clipboard.getData(Clipboard.kTextPlain);
-    String codigoColado = clipBoard?.text ?? "";
-    return codigoColado;
+    String codePasted = clipBoard?.text ?? "";
+    return codePasted;
   }
 }

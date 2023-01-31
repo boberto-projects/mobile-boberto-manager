@@ -4,34 +4,34 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class CustomExceptionResponse extends Equatable {
-  final String tipo;
-  final String mensagem;
+  final String type;
+  final String message;
   const CustomExceptionResponse({
-    required this.tipo,
-    required this.mensagem,
+    required this.type,
+    required this.message,
   });
 
   CustomExceptionResponse copyWith({
-    String? tipo,
-    String? mensagem,
+    String? type,
+    String? message,
   }) {
     return CustomExceptionResponse(
-      tipo: tipo ?? this.tipo,
-      mensagem: mensagem ?? this.mensagem,
+      type: type ?? this.type,
+      message: message ?? this.message,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'tipo': tipo,
-      'mensagem': mensagem,
+      'type': type,
+      'message': message,
     };
   }
 
   factory CustomExceptionResponse.fromMap(Map<String, dynamic> map) {
     return CustomExceptionResponse(
-      tipo: map['tipo'] as String,
-      mensagem: map['mensagem'] as String,
+      type: map['type'] as String,
+      message: map['message'] as String,
     );
   }
 
@@ -45,5 +45,5 @@ class CustomExceptionResponse extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [tipo, mensagem];
+  List<Object> get props => [type, message];
 }

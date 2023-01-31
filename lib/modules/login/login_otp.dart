@@ -20,8 +20,8 @@ class LoginOtpView extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.max, children: [
             Obx(
               () => Visibility(
-                  visible: loginController.mostrarErro.value,
-                  child: Text(loginController.mensagemErro.value)),
+                  visible: loginController.showError.value,
+                  child: Text(loginController.messageError.value)),
             ),
             const Text(
                 "Código OTP enviado para o número de celular cadastrado."),
@@ -29,21 +29,21 @@ class LoginOtpView extends StatelessWidget {
                 child: Center(
                     child: OtpWidget(
                         codigoDigitado: (codigo) {
-                          // loginController.validarCodigoOTP();
+                          // loginController.validateOtpCode();
                         },
                         listaCodigoOTP:
                             loginController.otpService.pinCodeList))),
-            Obx(() => Text(
-                "Expira em ${loginController.tempoIntervaloReenviar.value}")),
+            Obx(() =>
+                Text("Expira em ${loginController.intervalTimeResend.value}")),
             Obx(() => ElevatedButton(
-                  onPressed: loginController.tempoIntervaloReenviar.value ==
-                          AppConfig.otpIntervalo
-                      ? loginController.enviarEAguardarSMS
+                  onPressed: loginController.intervalTimeResend.value ==
+                          AppConfig.otpInterval
+                      ? loginController.sendAndWaitSMS
                       : null,
                   child: const Text('Reenviar'),
                 )),
             ElevatedButton(
-                onPressed: loginController.enviarCodigoSMS,
+                onPressed: loginController.sendSMSCode,
                 child: const Text('Reenviar')),
 
             // ElevatedButton(
@@ -52,7 +52,7 @@ class LoginOtpView extends StatelessWidget {
             // ),
 
             // ElevatedButton(
-            //   onPressed: loginController.autenticar,
+            //   onPressed: loginController.authenticator,
             //   child: const Text('Logar'),
             // )
           ]),

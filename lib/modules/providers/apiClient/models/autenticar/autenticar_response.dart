@@ -3,28 +3,28 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class AutenticarResponse extends Equatable {
+class authenticatorResponse extends Equatable {
   final String token;
-  final bool duplaAutenticacaoObrigatoria;
+  final bool pairAuthenticationEnabled;
   final String? tipo;
   final String expiraEm;
-  const AutenticarResponse({
+  const authenticatorResponse({
     required this.token,
-    required this.duplaAutenticacaoObrigatoria,
+    required this.pairAuthenticationEnabled,
     this.tipo,
     required this.expiraEm,
   });
 
-  AutenticarResponse copyWith({
+  authenticatorResponse copyWith({
     String? token,
-    bool? duplaAutenticacaoObrigatoria,
+    bool? pairAuthenticationEnabled,
     String? tipo,
     String? expiraEm,
   }) {
-    return AutenticarResponse(
+    return authenticatorResponse(
       token: token ?? this.token,
-      duplaAutenticacaoObrigatoria:
-          duplaAutenticacaoObrigatoria ?? this.duplaAutenticacaoObrigatoria,
+      pairAuthenticationEnabled:
+          pairAuthenticationEnabled ?? this.pairAuthenticationEnabled,
       tipo: tipo ?? this.tipo,
       expiraEm: expiraEm ?? this.expiraEm,
     );
@@ -33,16 +33,16 @@ class AutenticarResponse extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'token': token,
-      'duplaAutenticacaoObrigatoria': duplaAutenticacaoObrigatoria,
+      'pairAuthenticationEnabled': pairAuthenticationEnabled,
       'tipo': tipo,
       'expiraEm': expiraEm,
     };
   }
 
-  factory AutenticarResponse.fromMap(Map<String, dynamic> map) {
-    return AutenticarResponse(
+  factory authenticatorResponse.fromMap(Map<String, dynamic> map) {
+    return authenticatorResponse(
       token: map['token'] as String,
-      duplaAutenticacaoObrigatoria: map['duplaAutenticacaoObrigatoria'] as bool,
+      pairAuthenticationEnabled: map['pairAuthenticationEnabled'] as bool,
       tipo: map['tipo'] != null ? map['tipo'] as String : null,
       expiraEm: map['expiraEm'] as String,
     );
@@ -50,13 +50,12 @@ class AutenticarResponse extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory AutenticarResponse.fromJson(String source) =>
-      AutenticarResponse.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory authenticatorResponse.fromJson(String source) => authenticatorResponse
+      .fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;
 
   @override
-  List<Object> get props =>
-      [token, duplaAutenticacaoObrigatoria, tipo!, expiraEm];
+  List<Object> get props => [token, pairAuthenticationEnabled, tipo!, expiraEm];
 }

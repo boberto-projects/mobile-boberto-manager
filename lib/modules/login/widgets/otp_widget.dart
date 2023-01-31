@@ -18,7 +18,7 @@ class OtpWidget extends StatelessWidget {
     return ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        itemCount: AppConfig.otpTamanho,
+        itemCount: AppConfig.otpLength,
         itemBuilder: (BuildContext context, int index) {
           return PinBoxSection(
               notificarMudanca: () {

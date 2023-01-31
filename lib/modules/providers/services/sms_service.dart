@@ -5,15 +5,14 @@ import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SMSService extends GetxService {
-  Timer? _aguardarSMSTimer;
+  Timer? _waitSMSTimer;
 
-  Future<void> aguardarSMS(void Function(String) callBackSMSRecebido) async {
-    if (_aguardarSMSTimer != null) {
+  Future<void> waitSMS(void Function(String) callBackSMSRecebido) async {
+    if (_waitSMSTimer != null) {
       return;
     }
-    _aguardarSMSTimer =
-        Timer.periodic(const Duration(seconds: 5), (timer) async {
-      var smsRecebido = await obterUltimoSMSRecebido();
+    _waitSMSTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      var smsRecebido = await getLastSMS();
       if (smsRecebido != null) {
         String mensagemRecebida = smsRecebido.body ?? "";
         callBackSMSRecebido(mensagemRecebida);
@@ -22,7 +21,7 @@ class SMSService extends GetxService {
     });
   }
 
-  Future<SmsMessage?> obterUltimoSMSRecebido() async {
+  Future<SmsMessage?> getLastSMS() async {
     SmsQuery query = SmsQuery();
     List<SmsMessage> messages = [];
     var permission = await Permission.sms.status;

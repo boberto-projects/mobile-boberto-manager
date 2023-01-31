@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class ValidarOtpResponse extends Equatable {
+class ValidateOtpResponse extends Equatable {
   final int? passoDeTempo;
   final bool? valido;
 
-  const ValidarOtpResponse({this.passoDeTempo, this.valido});
+  const ValidateOtpResponse({this.passoDeTempo, this.valido});
 
-  factory ValidarOtpResponse.fromMap(Map<String, dynamic> data) {
-    return ValidarOtpResponse(
+  factory ValidateOtpResponse.fromMap(Map<String, dynamic> data) {
+    return ValidateOtpResponse(
       passoDeTempo: data['passoDeTempo'] as int?,
       valido: data['valido'] as bool?,
     );
@@ -22,15 +22,15 @@ class ValidarOtpResponse extends Equatable {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [ValidarOtpResponse].
-  factory ValidarOtpResponse.fromJson(String data) {
-    return ValidarOtpResponse.fromMap(
+  /// Parses the string and returns the resulting Json object as [ValidateOtpResponse].
+  factory ValidateOtpResponse.fromJson(String data) {
+    return ValidateOtpResponse.fromMap(
         json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [ValidarOtpResponse] to a JSON string.
+  /// Converts [ValidateOtpResponse] to a JSON string.
   String toJson() => json.encode(toMap());
 
   @override
